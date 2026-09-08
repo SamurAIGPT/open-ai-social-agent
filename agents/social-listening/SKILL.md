@@ -4,8 +4,9 @@ slug: social-listening
 version: 1.0.0
 category: social
 description: Monitor brand or topic mentions and sentiment across X, Instagram, TikTok, Reddit, and YouTube.
-status: partial
+status: blueprint
 muapi_capabilities:
+  - social.read_posts
   - tiktok-fetch-videos
   - instagram-fetch-reels
   - youtube-fetch-shorts
@@ -25,9 +26,13 @@ Track what people are saying about a brand, product, competitor, or topic across
 
 ## Before you start
 
-Read `references/muapi-social-tools.md`. The current Muapi retrieval tasks are
-limited: most require a known username, and YouTube Shorts also supports a
-keyword query. They are not a complete cross-platform mention or comments API.
+Read `references/muapi-social-tools.md`. `social.read_posts` is coded on Muapi
+(TikTok, Instagram, LinkedIn, Reddit, and Facebook), but is **not yet live in
+production** — verify availability before assuming it's callable. Until it's
+live, or for platforms it doesn't cover (X, YouTube), fall back to the
+per-platform retrieval tasks below, which are limited: most require a known
+username, and YouTube Shorts also supports a keyword query. Neither `social.read_posts`
+nor the fallback tasks are a complete cross-platform mention or comments API.
 Do not present an account feed or a keyword sample as total brand mention
 volume.
 
@@ -58,16 +63,17 @@ volume.
 
 ## Available Muapi retrieval
 
+- `social.read_posts` — recent posts and engagement for a known account across TikTok, Instagram, LinkedIn, Reddit, and Facebook. Coded, **not yet live in production** — verify at runtime before relying on it.
 - `tiktok-fetch-videos` — recent videos and engagement for a known TikTok username.
 - `instagram-fetch-reels` — recent Reels and engagement for a known Instagram username.
 - `youtube-fetch-shorts` — Shorts/search results by channel ID or keyword query.
 - `twitter-fetch-posts` — recent posts and engagement for a known X username.
 - `facebook-fetch-reels` — recent Reels and engagement for a known Facebook page/username.
 
-The generic `social.read_posts` and `social.sentiment_analysis` capabilities
-are not assumed to be live. If raw text is available, the host assistant may
-classify themes or sentiment, but must label it `assistant-derived` and show
-the sample and method rather than calling it a provider metric.
+The generic `social.sentiment_analysis` capability is not assumed to be live.
+If raw text is available, the host assistant may classify themes or
+sentiment, but must label it `assistant-derived` and show the sample and
+method rather than calling it a provider metric.
 
 ## Workflow
 

@@ -25,11 +25,11 @@ This repo is the umbrella for anything an agency or in-house team would call "th
 | Agent | Does | Status |
 |---|---|---|
 | [Social Project Setup](agents/social-project-setup/SKILL.md) | Establish brand, account, campaign, approval, and measurement context | Ready |
-| [Social Listening](agents/social-listening/SKILL.md) | Monitor brand/topic mentions and sentiment across platforms | Partial — scoped retrieval only |
-| [Creator Discovery](agents/creator-discovery/SKILL.md) | Find relevant creators/influencers for a campaign by niche and audience fit | Partial — candidate validation only |
+| [Social Listening](agents/social-listening/SKILL.md) | Monitor brand/topic mentions and sentiment across platforms | Blueprint — scoped retrieval only |
+| [Creator Discovery](agents/creator-discovery/SKILL.md) | Find relevant creators/influencers for a campaign by niche and audience fit | Blueprint — candidate validation only |
 | [Multi-Platform Publishing](agents/multi-platform-publishing/SKILL.md) | Adapt and schedule one media post across YouTube, TikTok, Instagram, Facebook, LinkedIn, X, Threads, and Pinterest | Blueprint |
-| [Trend Discovery](agents/trend-discovery/SKILL.md) | Surface what's currently working/trending in a niche to inform content strategy | Partial — limited platform/query coverage |
-| [Platform Research](agents/platform-research/SKILL.md) | Deep research on a platform's community/subreddit/audience before launching content there | Partial — host web/data required |
+| [Trend Discovery](agents/trend-discovery/SKILL.md) | Surface what's currently working/trending in a niche to inform content strategy | Blueprint — limited platform/query coverage |
+| [Platform Research](agents/platform-research/SKILL.md) | Deep research on a platform's community/subreddit/audience before launching content there | Blueprint — host web/data required |
 
 ## Muapi capability status
 
@@ -40,13 +40,14 @@ Live account and publishing surfaces include:
 - Scheduled-post management: `GET /social/posts`, `PATCH /social/posts/{id}`, `DELETE /social/posts/{id}`.
 - Platform-specific publish tasks for YouTube, TikTok, Instagram, Facebook, LinkedIn, X, Threads, and Pinterest, subject to runtime account/provider availability.
 - Narrow public retrieval tasks for TikTok profiles/videos, Instagram Reels, YouTube Shorts, X posts, and Facebook Reels.
+- `social.read_posts` — known-account post retrieval across TikTok, Instagram, LinkedIn, Reddit, and Facebook. Coded server-side on Muapi, **not yet deployed to production** — do not call it until the host confirms it's live.
 
-The current retrieval tasks do not provide complete cross-platform brand
-listening, creator discovery, community feeds, or provider-returned sentiment.
-The generic `social.read_posts`, `social.search_creators`, and
-`social.sentiment_analysis` names must not be called unless the host exposes a
-verified implementation. See [the capability map](references/muapi-social-tools.md)
-for task/provider coverage and safe fallbacks.
+The current and coded retrieval tasks do not provide complete cross-platform
+brand listening, creator discovery, community feeds, or provider-returned
+sentiment. The generic `social.search_creators` and `social.sentiment_analysis`
+names must not be called unless the host exposes a verified implementation.
+See [the capability map](references/muapi-social-tools.md) for task/provider
+coverage and safe fallbacks.
 
 Owned-account reach, impressions, audience demographics, conversions, and
 revenue require platform-native analytics or GA4/other analytics supplied by
@@ -90,10 +91,19 @@ until a human explicitly approves it.
 Multi-Platform Publishing is **Blueprint** — built on `social.list_accounts` and
 `social.publish`, with platform-specific publish tasks available subject to
 runtime account/provider status. It publishes to eight target platforms, not
-Reddit. The other research sub-agents have partial public retrieval coverage,
-but complete listening, creator discovery, community research, and provider
-sentiment still require capabilities or host-supplied data beyond the current
-Muapi surface.
+Reddit.
+
+The four research sub-agents (Social Listening, Creator Discovery, Trend
+Discovery, Platform Research) are also **Blueprint** as of 2026-09-09: their
+workflows are defined against Muapi's `social.read_posts` capability, which
+is coded server-side but **not yet deployed to production** (no live vendor
+token, no DB sync yet). `social.read_posts` is a known-account/user post
+retrieval capability, not a search, discovery, or sentiment API — it does not
+by itself resolve these sub-agents' stated gaps around cross-platform mention
+search, unknown-creator discovery, subreddit-wide community sampling, or
+provider-returned trend/sentiment data. Each sub-agent's own `SKILL.md` states
+this limitation plainly. Status will move to Tested once `social.read_posts`
+is live and a real end-to-end run has been verified.
 
 ## Contributing
 

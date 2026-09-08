@@ -4,8 +4,9 @@ slug: creator-discovery
 version: 1.0.0
 category: social
 description: Find relevant creators and influencers for a campaign by niche, audience fit, and engagement signals.
-status: partial
+status: blueprint
 muapi_capabilities:
+  - social.read_posts
   - tiktok-fetch-profile
   - tiktok-fetch-videos
   - instagram-fetch-reels
@@ -26,10 +27,12 @@ Given a campaign brief — niche, target audience, budget tier, platform — sur
 
 ## Before you start
 
-Read `references/muapi-social-tools.md`. The current Muapi surface does not
-provide generic creator search. The live scraper tasks can validate a
-user-supplied candidate list or known accounts; they cannot discover unknown
-creators across a niche.
+Read `references/muapi-social-tools.md`. `social.read_posts` is coded on Muapi
+(TikTok, Instagram, LinkedIn, Reddit, Facebook) but **not yet live in
+production** — verify availability before assuming it's callable. Neither it
+nor the current Muapi surface provides generic creator search. The live
+scraper tasks and `social.read_posts` can validate a user-supplied candidate
+list or known accounts; they cannot discover unknown creators across a niche.
 
 ## Use this agent when
 
@@ -57,6 +60,7 @@ creators across a niche.
 
 ## Available Muapi validation tasks
 
+- `social.read_posts` — recent posts/engagement for a known account across TikTok, Instagram, LinkedIn, Reddit, and Facebook. Coded, **not yet live in production**.
 - `tiktok-fetch-profile` — profile name and follower count for a known TikTok username.
 - `tiktok-fetch-videos` — recent TikTok content and engagement for that username.
 - `instagram-fetch-reels` — recent Instagram Reels for a known username.
@@ -64,10 +68,9 @@ creators across a niche.
 - `twitter-fetch-posts` — recent X content for a known username.
 - `facebook-fetch-reels` — recent Facebook Reels for a known page/username.
 
-The generic `social.search_creators` and `social.read_posts` capabilities are
-not assumed to be live. Do not turn a keyword search result or a supplied
-candidate list into a claim that the market-wide creator universe was
-searched.
+The generic `social.search_creators` capability is not assumed to be live. Do
+not turn a keyword search result or a supplied candidate list into a claim
+that the market-wide creator universe was searched.
 
 ## Workflow
 

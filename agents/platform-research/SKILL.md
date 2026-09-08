@@ -4,8 +4,9 @@ slug: platform-research
 version: 1.0.0
 category: social
 description: Deep research on a specific platform's community, subreddit, or audience before launching content there.
-status: partial
+status: blueprint
 muapi_capabilities:
+  - social.read_posts
   - tiktok-fetch-videos
   - instagram-fetch-reels
   - youtube-fetch-shorts
@@ -25,11 +26,14 @@ Before a brand launches content on a specific platform community — a subreddit
 
 ## Before you start
 
-Read `references/muapi-social-tools.md`. The current Muapi retrieval tasks
-fetch known accounts or YouTube search results; they do not provide complete
-community feeds, comments, moderation rules, or platform-wide audience data.
-Use host-provided web access or user-supplied exports for explicit community
-rules and broader evidence.
+Read `references/muapi-social-tools.md`. `social.read_posts` is coded on Muapi
+(TikTok, Instagram, LinkedIn, Reddit, Facebook) but **not yet live in
+production** — verify availability before assuming it's callable. It and the
+current Muapi retrieval tasks fetch known accounts (or, for Reddit, a known
+user) or YouTube search results; they do not provide complete community
+feeds, subreddit-wide samples, comments, moderation rules, or platform-wide
+audience data. Use host-provided web access or user-supplied exports for
+explicit community rules and broader evidence.
 
 ## Use this agent when
 
@@ -54,14 +58,14 @@ rules and broader evidence.
 
 ## Available Muapi retrieval
 
+- `social.read_posts` — recent posts/engagement for a known account or user across TikTok, Instagram, LinkedIn, Reddit, and Facebook. Coded, **not yet live in production**.
 - Account-scoped posts/Reels for known TikTok, Instagram, X, and Facebook
   accounts.
 - YouTube Shorts/search results by known channel ID or keyword query.
 
-The generic `social.read_posts` and `social.sentiment_analysis` capabilities
-are not assumed to be live. Any theme or sentiment classification performed
-by the host assistant must be labeled `assistant-derived` and tied to the
-observed sample.
+The generic `social.sentiment_analysis` capability is not assumed to be live.
+Any theme or sentiment classification performed by the host assistant must be
+labeled `assistant-derived` and tied to the observed sample.
 
 ## Workflow
 

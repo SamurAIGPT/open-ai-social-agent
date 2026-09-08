@@ -4,8 +4,9 @@ slug: trend-discovery
 version: 1.0.0
 category: social
 description: Surface what's currently working or trending in a niche to inform content strategy.
-status: partial
+status: blueprint
 muapi_capabilities:
+  - social.read_posts
   - tiktok-fetch-videos
   - instagram-fetch-reels
   - youtube-fetch-shorts
@@ -25,9 +26,12 @@ Identify what's currently gaining traction in a given niche or platform — form
 
 ## Before you start
 
-Read `references/muapi-social-tools.md`. Trend coverage is partial. YouTube
-Shorts supports a keyword query, while the current TikTok, Instagram, X, and
-Facebook retrieval tasks are primarily account-scoped. A generic
+Read `references/muapi-social-tools.md`. `social.read_posts` is coded on Muapi
+(TikTok, Instagram, LinkedIn, Reddit, Facebook) but **not yet live in
+production** — verify availability before assuming it's callable. Trend
+coverage is otherwise partial. YouTube Shorts supports a keyword query, while
+`social.read_posts` and the current TikTok, Instagram, X, and Facebook
+retrieval tasks are account-scoped, not keyword/trend search. A generic
 cross-platform trend or hashtag search requires an additional host-provided
 source.
 
@@ -56,6 +60,7 @@ source.
 
 ## Available Muapi retrieval
 
+- `social.read_posts` — recent posts/engagement for a known account across TikTok, Instagram, LinkedIn, Reddit, and Facebook. Coded, **not yet live in production**; account-scoped, not a trend/keyword search.
 - `youtube-fetch-shorts` — keyword or channel-scoped Shorts results with
   sorting and date filters.
 - `tiktok-fetch-videos` — recent videos for a known username with optional
@@ -65,9 +70,9 @@ source.
 - `twitter-fetch-posts` — recent posts for a known X username.
 - `facebook-fetch-reels` — recent Reels for a known Facebook page/username.
 
-The generic `social.read_posts` and `social.sentiment_analysis` capabilities
-are not assumed to be live. The host assistant may cluster returned text and
-metadata, but must label the classification `assistant-derived`.
+The generic `social.sentiment_analysis` capability is not assumed to be live.
+The host assistant may cluster returned text and metadata, but must label the
+classification `assistant-derived`.
 
 ## Workflow
 

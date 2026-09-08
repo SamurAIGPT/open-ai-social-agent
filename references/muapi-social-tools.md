@@ -39,6 +39,13 @@ The current Muapi catalog exposes narrower public retrieval tasks. They do not
 form a universal mention, creator-search, sentiment, or owned-account
 analytics API.
 
+`social.read_posts` is coded on Muapi and covers TikTok, Instagram, LinkedIn,
+Reddit, and Facebook from a single capability — **it is not yet live in
+production**; verify availability before assuming it's callable. Like the
+tasks below, it requires a known account/user identifier per platform — it is
+not a keyword, hashtag, or cross-platform mention search, and it does not
+return sentiment or theme classification.
+
 | Task | Provider | Required lookup | Useful evidence |
 | --- | --- | --- | --- |
 | `tiktok-fetch-profile` | TOKAPI | TikTok username | profile name and follower count when returned |
@@ -57,8 +64,6 @@ Use pagination only when the host exposes the returned cursor.
 Do not call or describe these as live unless the host exposes a verified
 replacement:
 
-- `social.read_posts` for cross-platform brand/topic mentions, comments, or
-  community feeds;
 - `social.search_creators` for discovering unknown creators by niche or
   audience; and
 - `social.sentiment_analysis` for a provider-returned sentiment or theme
