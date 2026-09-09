@@ -72,33 +72,61 @@ Inputs and limits vary by task. Preserve the exact username, channel ID,
 query, count, cursor, date filters, country/language, and sort options used.
 Use pagination only when the host exposes the returned cursor.
 
+## Creator search, profile, analytics, and lookalike
+
+These four are coded on Muapi's server but **not yet confirmed live in
+production** (pending a DB sync) — verify availability at runtime before
+assuming any of them are callable; if one 500s as not-initialized, fall back
+to `social.search_posts` lead-sourcing or a host-supplied candidate list and
+say so explicitly. All four cover **Instagram, TikTok, and YouTube only** —
+X and Facebook have no equivalent and never silently degrade into a
+content-fetch substitute; state that plainly instead.
+
+| Capability | Surface | Required lookup | What it returns |
+| --- | --- | --- | --- |
+| `social.search_creators` | `POST /creators-search` | A natural-language query and/or structured filters (niche, platform, country, min/max followers, min engagement rate) — at least one required | Matching creator profiles, merged across two providers when both a query and structured filters are given |
+| `social.creator_profile` | `POST /creators-profile` | Platform + creator handle | That creator's profile, contacts, and stats |
+| `social.creator_analytics` | `POST /creators-analytics` | Platform + creator handle | That creator's own performance analytics and audience demographics (third-party creator data, not the requester's owned-account insights — see the host-supplied analytics contract below) |
+| `social.creator_lookalike` | `POST /creators-lookalike` | Platform + reference creator's handle | Up to 20 creators similar to the reference creator |
+
+`social.search_creators` is a real creator/profile database search — distinct
+from `social.search_posts`, which only surfaces post *content* matching a
+query. Once confirmed live, treat `social.search_creators` as the actual
+discovery path on Instagram/TikTok/YouTube, and `social.search_posts` as a
+fallback/supplementary lead-generation aid rather than the primary discovery
+tool for those three platforms.
+
 ## Not currently available as generic Muapi capabilities
 
 Do not call or describe these as live unless the host exposes a verified
 replacement:
 
-- A creator/profile search by niche or audience — `social.search_posts`
-  surfaces matching *content*, not a creator database; treat any creator
-  handle found in its results as a lead to validate, not a search result; and
+- Creator search, profile, analytics, or lookalike coverage for **X or
+  Facebook** — the four capabilities above are Instagram/TikTok/YouTube only;
 - `social.sentiment_analysis` for a provider-returned sentiment or theme
   result.
 
-`social.search_posts` closes real cross-account discovery gaps on TikTok,
-Instagram, and YouTube, but the retrieval and search tasks together still
-cannot establish complete brand mention volume, share of voice, Reddit/X/
-LinkedIn coverage, community norms/comments, or a fully global trend. The
-host may classify supplied text for themes or sentiment, but label that
-result `assistant-derived`, include the sample and method, and do not
-present it as a Muapi sentiment metric.
+`social.search_posts` and `social.search_creators` together close real
+cross-account discovery gaps on TikTok, Instagram, and YouTube, but the
+retrieval and search tasks together still cannot establish complete brand
+mention volume, share of voice, Reddit/X/LinkedIn coverage, community
+norms/comments, or a fully global trend. The host may classify supplied text
+for themes or sentiment, but label that result `assistant-derived`, include
+the sample and method, and do not present it as a Muapi sentiment metric.
 
 ## Host-supplied analytics contract
 
 Muapi public post metrics are not the same as owned-account insights. If the
-user asks about reach, impressions, audience demographics, profile visits,
-link clicks, conversions, revenue, or account-level performance, the host must
-supply a read-only platform analytics connector or an export from the relevant
-platform. GA4 or another analytics system can add landing-page, campaign, and
-conversion evidence; it cannot reconstruct missing platform impressions.
+user asks about reach, impressions, profile visits, link clicks, conversions,
+revenue, or account-level performance **for their own connected account**,
+the host must supply a read-only platform analytics connector or an export
+from the relevant platform. GA4 or another analytics system can add
+landing-page, campaign, and conversion evidence; it cannot reconstruct
+missing platform impressions. This is separate from `social.creator_analytics`
+above, which returns a *third-party candidate creator's* own audience
+demographics/performance data on Instagram, TikTok, or YouTube — not the
+requester's owned-account insights, and not a substitute for this contract
+when the question is about the requester's own account.
 
 Useful analytics fields include:
 
