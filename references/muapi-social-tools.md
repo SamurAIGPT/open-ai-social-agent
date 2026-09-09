@@ -39,12 +39,25 @@ The current Muapi catalog exposes narrower public retrieval tasks. They do not
 form a universal mention, creator-search, sentiment, or owned-account
 analytics API.
 
-`social.read_posts` is coded on Muapi and covers TikTok, Instagram, LinkedIn,
-Reddit, and Facebook from a single capability — **it is not yet live in
-production**; verify availability before assuming it's callable. Like the
-tasks below, it requires a known account/user identifier per platform — it is
-not a keyword, hashtag, or cross-platform mention search, and it does not
-return sentiment or theme classification.
+`social.read_posts` is live on Muapi and covers known-account retrieval for
+TikTok, Instagram, Facebook, and Reddit (Reddit is subreddit-level, not
+per-user — the `username` field means "subreddit name" for `platform=reddit`)
+from a single capability. **LinkedIn personal-post retrieval is not
+supported** (only a separate, unrelated LinkedIn company-page capability
+exists upstream). Like the tasks below, `social.read_posts` requires a known
+account/subreddit identifier per platform — it is not a keyword, hashtag, or
+cross-platform mention search, and it does not return sentiment or theme
+classification.
+
+`social.search_posts` is live on Muapi and covers keyword/hashtag search for
+**TikTok, Instagram, and YouTube only** — a leading `#` on Instagram searches
+by hashtag, anything else searches Reels by keyword. **Reddit and LinkedIn
+have no routed search capability at all** (confirmed against the upstream
+catalog) and are rejected at the schema level rather than silently failing.
+X/Threads are not covered (a Threads search route exists upstream but errors
+in testing, so it is not exposed). This is content search, not a creator/user
+search — it surfaces posts matching a query, not creator profiles or
+follower/audience data.
 
 | Task | Provider | Required lookup | Useful evidence |
 | --- | --- | --- | --- |
@@ -64,17 +77,19 @@ Use pagination only when the host exposes the returned cursor.
 Do not call or describe these as live unless the host exposes a verified
 replacement:
 
-- `social.search_creators` for discovering unknown creators by niche or
-  audience; and
+- A creator/profile search by niche or audience — `social.search_posts`
+  surfaces matching *content*, not a creator database; treat any creator
+  handle found in its results as a lead to validate, not a search result; and
 - `social.sentiment_analysis` for a provider-returned sentiment or theme
   result.
 
-The retrieval tasks above can validate known accounts or produce limited
-public-post samples. They cannot establish complete brand mention volume,
-share of voice, community norms, or a global trend. The host may classify
-supplied text for themes or sentiment, but label that result
-`assistant-derived`, include the sample and method, and do not present it as a
-Muapi sentiment metric.
+`social.search_posts` closes real cross-account discovery gaps on TikTok,
+Instagram, and YouTube, but the retrieval and search tasks together still
+cannot establish complete brand mention volume, share of voice, Reddit/X/
+LinkedIn coverage, community norms/comments, or a fully global trend. The
+host may classify supplied text for themes or sentiment, but label that
+result `assistant-derived`, include the sample and method, and do not
+present it as a Muapi sentiment metric.
 
 ## Host-supplied analytics contract
 

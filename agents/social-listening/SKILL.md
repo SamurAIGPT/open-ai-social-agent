@@ -6,6 +6,7 @@ category: social
 description: Monitor brand or topic mentions and sentiment across X, Instagram, TikTok, Reddit, and YouTube.
 status: blueprint
 muapi_capabilities:
+  - social.search_posts
   - social.read_posts
   - tiktok-fetch-videos
   - instagram-fetch-reels
@@ -26,14 +27,18 @@ Track what people are saying about a brand, product, competitor, or topic across
 
 ## Before you start
 
-Read `references/muapi-social-tools.md`. `social.read_posts` is coded on Muapi
-(TikTok, Instagram, LinkedIn, Reddit, and Facebook), but is **not yet live in
-production** — verify availability before assuming it's callable. Until it's
-live, or for platforms it doesn't cover (X, YouTube), fall back to the
-per-platform retrieval tasks below, which are limited: most require a known
-username, and YouTube Shorts also supports a keyword query. Neither `social.read_posts`
-nor the fallback tasks are a complete cross-platform mention or comments API.
-Do not present an account feed or a keyword sample as total brand mention
+Read `references/muapi-social-tools.md`. `social.search_posts` is live on
+Muapi and is the primary tool for this agent — keyword/hashtag search across
+TikTok, Instagram, and YouTube (Instagram: a leading `#` searches by
+hashtag). It does not cover X, Reddit, LinkedIn, or Threads. `social.read_posts`
+is also live (TikTok, Instagram, Facebook, and Reddit as subreddit-level;
+LinkedIn personal posts unsupported) but is account-scoped, not a mention
+search — use it to pull a known account/subreddit's own posts, not to find
+who is talking about a topic. For platforms neither tool covers (X, and
+comments/community discussion on any platform), fall back to the
+per-platform retrieval tasks below or an approved host source. None of these
+tools together are a complete cross-platform mention or comments API. Do not
+present a keyword-search sample or an account feed as total brand mention
 volume.
 
 ## Use this agent when
@@ -63,7 +68,8 @@ volume.
 
 ## Available Muapi retrieval
 
-- `social.read_posts` — recent posts and engagement for a known account across TikTok, Instagram, LinkedIn, Reddit, and Facebook. Coded, **not yet live in production** — verify at runtime before relying on it.
+- `social.search_posts` — keyword/hashtag search for public posts on TikTok, Instagram, and YouTube. Live. This is the tool for topic/brand-term tracking; it does not cover X, Reddit, LinkedIn, or Threads, and it returns matching posts, not comments or sentiment.
+- `social.read_posts` — recent posts and engagement for a known account across TikTok, Instagram, Facebook, and Reddit (subreddit-level). Live; LinkedIn personal posts unsupported.
 - `tiktok-fetch-videos` — recent videos and engagement for a known TikTok username.
 - `instagram-fetch-reels` — recent Reels and engagement for a known Instagram username.
 - `youtube-fetch-shorts` — Shorts/search results by channel ID or keyword query.
@@ -80,9 +86,12 @@ method rather than calling it a provider metric.
 1. Validate tracked term(s), platform scope, time window, and whether the
    request is for a brand/topic search or known-account monitoring; default to
    the last 24 hours only when that scope is clear.
-2. Select only the Muapi retrieval task whose required username, page slug,
-   channel ID, or query is available. For unsupported topic/mention scopes,
-   use an approved host source or return the scope as unavailable.
+2. For topic/brand-term tracking on TikTok, Instagram, or YouTube, call
+   `social.search_posts` with the tracked term (or `#term` for an Instagram
+   hashtag). For known-account monitoring, select the retrieval task whose
+   required username, subreddit, page slug, or channel ID is available. For
+   X, Reddit-wide, LinkedIn, or comment-level scopes, use an approved host
+   source or return the scope as unavailable.
 3. Retrieve the bounded sample, preserving the exact task, provider, filters,
    cursor, and result count.
 4. Deduplicate near-identical posts (reposts, cross-posted content, and
@@ -139,10 +148,18 @@ filters, and sampling notes and label the resulting analysis accordingly.
 ## Example interactions
 
 **Request:** "How is the launch of our new pricing page being received on X and Reddit today?"
-**Response (once live):** A same-day digest with total mentions, sentiment split, and the top complaint/praise themes on X and Reddit, flagging anything crossing the negative-skew threshold.
-**Response (today):** A note that full X/Reddit brand listening is not covered
-by the current retrieval tasks; offer a bounded known-account sample or ask for
-an approved export.
+**Response:** A note that X and Reddit-wide brand listening are not covered
+by `social.search_posts` (TikTok/Instagram/YouTube only) or `social.read_posts`
+(known-account/subreddit only); offer a `social.search_posts` sample on
+TikTok/Instagram/YouTube instead, a bounded known-account/subreddit sample, or
+ask for an approved export.
+
+**Request:** "What's being said about our new product on TikTok and Instagram this week?"
+**Response:** A same-day digest built from `social.search_posts` on both
+platforms — mention sample, top themes with representative posts, and
+assistant-derived sentiment labeled as such (not a provider metric).
 
 **Request:** "Compare our sentiment to [Competitor]'s over the last week."
-**Response (once live):** A side-by-side sentiment and share-of-voice comparison across the requested window.
+**Response:** A side-by-side sample comparison on TikTok/Instagram/YouTube
+(same term/window/method for both), explicitly labeled a sample comparison,
+not a population-wide share-of-voice measurement.

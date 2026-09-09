@@ -6,6 +6,7 @@ category: social
 description: Deep research on a specific platform's community, subreddit, or audience before launching content there.
 status: blueprint
 muapi_capabilities:
+  - social.search_posts
   - social.read_posts
   - tiktok-fetch-videos
   - instagram-fetch-reels
@@ -26,14 +27,16 @@ Before a brand launches content on a specific platform community — a subreddit
 
 ## Before you start
 
-Read `references/muapi-social-tools.md`. `social.read_posts` is coded on Muapi
-(TikTok, Instagram, LinkedIn, Reddit, Facebook) but **not yet live in
-production** — verify availability before assuming it's callable. It and the
-current Muapi retrieval tasks fetch known accounts (or, for Reddit, a known
-user) or YouTube search results; they do not provide complete community
-feeds, subreddit-wide samples, comments, moderation rules, or platform-wide
-audience data. Use host-provided web access or user-supplied exports for
-explicit community rules and broader evidence.
+Read `references/muapi-social-tools.md`. `social.read_posts` is live on
+Muapi (TikTok, Instagram, Facebook, and Reddit — Reddit is subreddit-level:
+`social.read_posts` can pull a given subreddit's recent posts, but not
+comments, rules, or moderation posture; LinkedIn personal posts unsupported).
+`social.search_posts` is also live (TikTok, Instagram, YouTube keyword/
+hashtag search) but has **no Reddit coverage at all** — for the classic "is
+r/[subreddit] a fit" case, `social.read_posts`'s subreddit-post sample is the
+only Muapi source, and it still has no comments/rules/moderation data. Use
+host-provided web access or user-supplied exports for explicit community
+rules, comments, and broader evidence on any platform.
 
 ## Use this agent when
 
@@ -58,7 +61,8 @@ explicit community rules and broader evidence.
 
 ## Available Muapi retrieval
 
-- `social.read_posts` — recent posts/engagement for a known account or user across TikTok, Instagram, LinkedIn, Reddit, and Facebook. Coded, **not yet live in production**.
+- `social.read_posts` — recent posts/engagement for a known account or subreddit across TikTok, Instagram, Reddit, and Facebook. Live; the only Muapi source for a specific subreddit's own post sample. No comments, rules, or moderation data on any platform.
+- `social.search_posts` — keyword/hashtag content search on TikTok, Instagram, and YouTube only (no Reddit, no LinkedIn). Useful for a platform-wide (not community-specific) audience-tone sample on those three platforms.
 - Account-scoped posts/Reels for known TikTok, Instagram, X, and Facebook
   accounts.
 - YouTube Shorts/search results by known channel ID or keyword query.
@@ -74,8 +78,10 @@ labeled `assistant-derived` and tied to the observed sample.
    a supported public retrieval task.
 2. Collect explicit rules and moderation guidance from an approved community
    page or user-supplied source; keep them separate from inferred norms.
-3. Use a matching Muapi retrieval task only for a known account, page, channel,
-   or YouTube query. Do not treat that sample as the whole community.
+3. Use `social.read_posts` for a known subreddit/account/page, `social.search_posts`
+   for a TikTok/Instagram/YouTube keyword-scoped tone sample, or a matching
+   scraper task for a channel/query. Do not treat any of these as the whole
+   community.
 4. If text is available, summarize themes or sentiment in the host assistant;
    label the analysis `assistant-derived` and preserve the sample size.
 5. Characterize tone, content preferences, and recurring dealbreakers only
@@ -115,10 +121,14 @@ never fabricate community norms, rules, or reaction patterns.
 ## Example interactions
 
 **Request:** "Should we post about our new product on r/[subreddit] before launch?"
-**Response (once live):** A brief on the subreddit's rules, tone, and historical reception of brand content, with a proceed/adjust/reconsider recommendation.
-**Response (today):** A note that community-level evidence needs host web/file
-access or a supplied export; offer a limited known-account sample where the
-current retrieval tasks support it.
+**Response:** A brief combining `social.read_posts`'s subreddit post sample
+(tone/content-type evidence) with host web access for the subreddit's actual
+rules and moderation posture — the rules always need a web/export source,
+since `social.read_posts` has no comments or rules data; a proceed/adjust/
+reconsider recommendation with confidence tied to how much rule evidence was
+found.
 
 **Request:** "What does the TikTok fitness-creator community think of brand partnerships in general?"
-**Response (once live):** A sentiment/theme summary of how that audience segment reacts to brand-partnered content, with examples.
+**Response:** A `social.search_posts` keyword sample on TikTok for the niche,
+summarized as an assistant-derived theme/tone read tied to the sample size —
+not a full community-wide sentiment measurement.

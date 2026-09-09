@@ -6,6 +6,7 @@ category: social
 description: Surface what's currently working or trending in a niche to inform content strategy.
 status: blueprint
 muapi_capabilities:
+  - social.search_posts
   - social.read_posts
   - tiktok-fetch-videos
   - instagram-fetch-reels
@@ -26,14 +27,18 @@ Identify what's currently gaining traction in a given niche or platform — form
 
 ## Before you start
 
-Read `references/muapi-social-tools.md`. `social.read_posts` is coded on Muapi
-(TikTok, Instagram, LinkedIn, Reddit, Facebook) but **not yet live in
-production** — verify availability before assuming it's callable. Trend
-coverage is otherwise partial. YouTube Shorts supports a keyword query, while
-`social.read_posts` and the current TikTok, Instagram, X, and Facebook
-retrieval tasks are account-scoped, not keyword/trend search. A generic
-cross-platform trend or hashtag search requires an additional host-provided
-source.
+Read `references/muapi-social-tools.md`. `social.search_posts` is live on
+Muapi and is the primary tool for this agent — keyword/hashtag search across
+TikTok, Instagram, and YouTube (a leading `#` on Instagram searches by
+hashtag). It does not cover X, Reddit, LinkedIn, or Threads, and it is a
+single-query content search, not a trending-feed endpoint — treat repeated,
+comparable queries as the way to observe what's currently active, not a
+built-in "what's trending" ranking. `social.read_posts` is also live
+(TikTok, Instagram, Facebook, Reddit as subreddit-level; LinkedIn personal
+posts unsupported) but is account-scoped, useful only for validating a
+known creator's recent output, not discovering a niche's trends. For X or a
+genuine cross-platform trending-feed ranking, an additional host-provided
+source is still required.
 
 ## Use this agent when
 
@@ -60,7 +65,8 @@ source.
 
 ## Available Muapi retrieval
 
-- `social.read_posts` — recent posts/engagement for a known account across TikTok, Instagram, LinkedIn, Reddit, and Facebook. Coded, **not yet live in production**; account-scoped, not a trend/keyword search.
+- `social.search_posts` — keyword/hashtag search for public posts on TikTok, Instagram, and YouTube. Live. The primary trend-discovery source; not a trending-feed ranking, so require repeated/comparable samples before calling something a trend (see Workflow/Decision rules).
+- `social.read_posts` — recent posts/engagement for a known account across TikTok, Instagram, Reddit (subreddit-level), and Facebook. Live; account-scoped, not a trend/keyword search.
 - `youtube-fetch-shorts` — keyword or channel-scoped Shorts results with
   sorting and date filters.
 - `tiktok-fetch-videos` — recent videos for a known username with optional
@@ -79,9 +85,11 @@ classification `assistant-derived`.
 1. Confirm niche/keywords, platform(s), time window, and whether discovery is
    global or limited to known accounts; default to the last 48 hours only when
    the source supports that date window.
-2. Select `youtube-fetch-shorts` for keyword discovery or the matching
-   account-scoped task for known creators/pages. For unsupported global scope,
-   use an approved host source or report the gap.
+2. Select `social.search_posts` for keyword/hashtag discovery on TikTok,
+   Instagram, or YouTube, `youtube-fetch-shorts` for a YouTube-specific
+   keyword/channel query, or the matching account-scoped task for known
+   creators/pages. For X, Reddit-wide, LinkedIn, or Threads, use an approved
+   host source or report the gap.
 3. Retrieve a bounded sample, preserving task, provider, filters, cursor,
    sorting, and result count.
 4. Cluster results by format and recurring topic/hook using returned text and
@@ -128,10 +136,17 @@ clear. Never invent trending topics, examples, engagement, or growth rates.
 ## Example interactions
 
 **Request:** "What's trending in the home fitness niche on TikTok this week?"
-**Response (once live):** A ranked list of trend clusters (formats/hooks/topics) currently gaining traction in home fitness on TikTok, with example posts.
-**Response (today):** A note that cross-platform trend discovery is not
-available from the current task surface; offer a bounded YouTube keyword
-search or known-account sample.
+**Response:** A ranked list of trend clusters (formats/hooks/topics), built
+from `social.search_posts` keyword results on TikTok, requiring at least 3
+independent posts/creators per cluster and labeling any growth-rate claim
+only when comparable prior samples exist.
 
 **Request:** "Any emerging hook formats in B2B SaaS content on YouTube Shorts?"
-**Response (once live):** A small set of emerging (not yet saturated) hook patterns with growth-rate evidence and examples.
+**Response:** A small set of emerging hook patterns from `social.search_posts`
+(YouTube) and/or `youtube-fetch-shorts`, with example posts and growth-rate
+evidence only when supported by comparable observations.
+
+**Request:** "What's trending on X or Reddit for [topic]?"
+**Response:** A note that X and Reddit-wide trend discovery are not covered
+by any current retrieval or search task; offer a TikTok/Instagram/YouTube
+sample instead or ask for an approved export.
