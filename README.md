@@ -2,11 +2,11 @@
 
 An AI agent for social media management — listening, creator discovery, multi-platform publishing, and trend research across X, Instagram, TikTok, Reddit, YouTube, Facebook, LinkedIn, Threads, and Pinterest — backed by a secure host-provided Muapi connection and clearly scoped social data.
 
-Part of [Agency Agents OS](https://github.com/Anil-matcha/agency-agents-os), an open ecosystem of specialized AI agents for real business work.
+Part of [Open Business Agents](https://github.com/Anil-matcha/open-business-agents), an open ecosystem of specialized AI agents for real business work.
 
 ## Related Projects
 
-- [Agency Agents OS](https://github.com/Anil-matcha/agency-agents-os) — the central catalog this repo is part of.
+- [Open Business Agents](https://github.com/Anil-matcha/open-business-agents) — the central catalog this repo is part of.
 - [ai-youtube-agent](https://github.com/SamurAIGPT/ai-youtube-agent) — uses this repo's `social.publish` capability to actually upload optimized videos to YouTube.
 - [ai-content-repurposing-agent](https://github.com/SamurAIGPT/ai-content-repurposing-agent) — feeds this repo's multi-platform-publishing sub-agent with clipped video.
 - [ai-image-agent](https://github.com/SamurAIGPT/ai-image-agent) — supplies image posts for this repo to publish.
@@ -116,9 +116,13 @@ TikTok, and YouTube. These are coded server-side but, like `social.read_posts`,
 **not yet confirmed live in production** — verify before use. X and Facebook
 still have no equivalent coverage for any of the four.
 
+## Guides
+
+- [Compare social samples without overclaiming](guides/compare-social-samples-without-overclaiming.md) — scope comparable samples and label derived sentiment clearly.
+
 ## Contributing
 
-See [Agency Agents OS CONTRIBUTING.md](https://github.com/Anil-matcha/agency-agents-os/blob/main/CONTRIBUTING.md).
+See [Open Business Agents CONTRIBUTING.md](https://github.com/Anil-matcha/open-business-agents/blob/main/CONTRIBUTING.md).
 
 ## License
 
